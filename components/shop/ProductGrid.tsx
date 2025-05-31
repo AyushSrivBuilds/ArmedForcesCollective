@@ -27,7 +27,7 @@ const ProductGrid = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("featured");
   
-  const categories = ["all", ...new Set(productsData.map(product => product.category))];
+  const categories = ["all", ...Array.from(new Set(productsData.map(product => product.category)))];
   
   const filteredProducts = productsData.filter(product => {
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
