@@ -110,11 +110,6 @@ const Footer = () => {
               © {new Date().getFullYear()} Armed Forces of India Educational Platform. All rights reserved.
             </p>
             <div className="mt-4 sm:mt-0">
-              <img 
-                src="https://images.pexels.com/photos/1694000/pexels-photo-1694000.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
-                alt="Government of India Seal" 
-                className="h-12 w-auto" 
-              />
             </div>
           </div>
         </div>
