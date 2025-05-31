@@ -3,7 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { findMockUserByEmail } from '@/lib/mock-auth-store'; // Import from centralized store
 
-export const authOptions: AuthOptions = { // Re-added this line
+const authOptions: AuthOptions = { // Removed 'export'
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
