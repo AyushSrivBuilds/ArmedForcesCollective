@@ -17,9 +17,9 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { 
-  DollarSign, 
+// import { Progress } from "@/components/ui/progress"; // Commented out for build test
+import {
+  DollarSign,
   Users, 
   Book, 
   Shield, 
@@ -87,7 +87,10 @@ const DonateSection = () => {
                       <span className="text-sm font-medium">{item.category}</span>
                       <span className="text-sm font-medium">{item.percentage}%</span>
                     </div>
-                    <Progress value={item.percentage} className="h-2" />
+                    {/* <Progress value={item.percentage} className="h-2" /> */} {/* Commented out for build test */}
+                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden"> {/* Placeholder visual */}
+                        <div className="h-full bg-primary transition-all" style={{ width: `${item.percentage}%` }} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -145,10 +148,13 @@ const DonateSection = () => {
                         </div>
                       </div>
                     </div>
-                    <Progress 
-                      value={(category.raised / category.goal) * 100} 
-                      className="h-2" 
-                    />
+                    {/* <Progress
+                      value={(category.raised / category.goal) * 100}
+                      className="h-2"
+                    /> */} {/* Commented out for build test */}
+                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden"> {/* Placeholder visual */}
+                        <div className="h-full bg-primary transition-all" style={{ width: `${(category.raised / category.goal) * 100}%` }} />
+                    </div>
                   </div>
                 ))}
               </div>
