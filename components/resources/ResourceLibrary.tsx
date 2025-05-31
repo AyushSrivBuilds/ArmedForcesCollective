@@ -40,7 +40,7 @@ const ResourceLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   
-  const categories = ["All", ...new Set(resourcesData.map(resource => resource.category))];
+  const categories = ["All", ...Array.from(new Set(resourcesData.map(resource => resource.category)))];
   
   const getResourceIcon = (category: string) => {
     switch (category) {
