@@ -7,17 +7,17 @@ import { cn } from "@/lib/utils";
 
 const heroImages = [
   {
-    url: "https://images.pexels.com/photos/1706142/pexels-photo-1706142.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    url: "https://organiser.org/wp-content/uploads/2024/01/indian-army-4.webp?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     alt: "Indian Army soldiers in formation",
     caption: "Strength through Unity",
   },
   {
-    url: "https://images.pexels.com/photos/733537/pexels-photo-733537.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", 
+    url: "https://newslivetv.com/wp-content/uploads/2025/05/Operation-Sindoor-Indian-Air-Force.webp?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", 
     alt: "Indian Air Force jet in flight",
     caption: "Guardians of the Sky",
   },
   {
-    url: "https://images.pexels.com/photos/68201/pexels-photo-68201.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    url: "https://assets.telegraphindia.com/abp/2023/Dec/1703251677_26-new-rafale-deal-lead.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     alt: "Indian Navy ship at sea",
     caption: "Protecting Our Waters",
   },
@@ -25,10 +25,19 @@ const heroImages = [
 
 const HeroSection = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isFirstImageActuallyLoaded, setIsFirstImageActuallyLoaded] = useState(false);
 
   useEffect(() => {
-    setIsLoaded(true);
+    const firstImg = new Image();
+    firstImg.src = heroImages[0].url;
+    firstImg.onload = () => {
+      setIsFirstImageActuallyLoaded(true);
+    };
+    firstImg.onerror = () => {
+      console.error("HeroSection: First image failed to load.");
+      setIsFirstImageActuallyLoaded(true); // Set to true anyway to allow UI to proceed
+    };
+
     const interval = setInterval(() => {
       setActiveImageIndex((prev) => (prev + 1) % heroImages.length);
     }, 6000);
@@ -39,25 +48,44 @@ const HeroSection = () => {
   return (
     <section className="relative h-[85vh] overflow-hidden">
       {/* Hero Images */}
-      {heroImages.map((image, index) => (
-        <div
-          key={index}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-1000",
-            index === activeImageIndex ? "opacity-100" : "opacity-0"
-          )}
-        >
+      {heroImages.map((image, index) => {
+        const isActive = index === activeImageIndex;
+        let isVisibleForOpacity = false;
+        if (isActive) {
+          if (index === 0) { // First image
+            isVisibleForOpacity = isFirstImageActuallyLoaded;
+          } else { // Subsequent images
+            isVisibleForOpacity = true;
+          }
+        }
+
+        let applyInitialScaleEffect = false;
+        if (index === 0) {
+          applyInitialScaleEffect = isFirstImageActuallyLoaded;
+        } else {
+          applyInitialScaleEffect = isActive;
+        }
+
+        return (
           <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${image.url})`,
-              transform: isLoaded ? "scale(1)" : "scale(1.1)",
-              transition: "transform 10s ease-in-out",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/50" />
-        </div>
-      ))}
+            key={index}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-1000",
+              isVisibleForOpacity ? "opacity-100" : "opacity-0"
+            )}
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${image.url})`,
+                transform: applyInitialScaleEffect ? "scale(1)" : "scale(1.1)",
+                transition: "transform 10s ease-in-out",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </div>
+        );
+      })}
 
       {/* Hero Content */}
       <div className="relative h-full flex items-center">
@@ -72,7 +100,7 @@ const HeroSection = () => {
               education and community engagement.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-300">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
+              <Button size="lg" className="bg-primary bg-opacity-100 text-white hover:bg-primary/80">
                 Upcoming Events <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
               <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/20">

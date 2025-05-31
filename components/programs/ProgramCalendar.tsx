@@ -2,6 +2,9 @@
 
 import React from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Added
+import { useSession } from "next-auth/react"; // Added
+import { toast } from "@/hooks/use-toast"; // Added
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
 import { CalendarIcon, Filter, Users, BookOpen, Award, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +29,8 @@ import { cn } from "@/lib/utils";
 const ProgramCalendar = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [view, setView] = useState<"calendar" | "list">("list");
+  const router = useRouter(); // Added
+  const { data: session, status } = useSession(); // Added
   const [filters, setFilters] = useState({
     type: "all",
     audience: "all",
@@ -36,6 +41,20 @@ const ProgramCalendar = () => {
     const audienceMatch = filters.audience === "all" || program.audience === filters.audience;
     return typeMatch && audienceMatch;
   });
+
+  const handleRegisterClick = (programTitle: string, programPath: string) => {
+    if (status === "loading") return;
+
+    if (!session) {
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(programPath || '/programs')}`);
+    } else {
+      toast({
+        title: "Registration Successful!",
+        description: `You've been notionally registered for "${programTitle}".`,
+        variant: "default",
+      });
+    }
+  };
 
   const getProgramIcon = (type: string) => {
     switch (type) {
@@ -181,7 +200,13 @@ const ProgramCalendar = () => {
                     <div className="text-sm text-muted-foreground mb-4">
                       <strong>Location:</strong> {program.location}
                     </div>
-                    <Button className="w-full">Register Now</Button>
+                    <Button
+                      className="w-full"
+                      onClick={() => handleRegisterClick(program.title, `/programs/${program.id}`)} // Assuming program.id can form a path
+                      disabled={status === "loading"}
+                    >
+                      {status === "loading" ? "Loading..." : "Register Now"}
+                    </Button>
                   </CardContent>
                 </Card>
               ))

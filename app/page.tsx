@@ -1,11 +1,34 @@
+"use client"; // Make it a client component
+
 import HeroSection from "@/components/layout/HeroSection";
 import FeaturedPrograms from "@/components/programs/FeaturedPrograms";
 import VeteranHighlights from "@/components/veterans/VeteranHighlights";
 import ResourcesOverview from "@/components/resources/ResourcesOverview";
 import ShopPreview from "@/components/shop/ShopPreview";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react"; // Added
+import { useRouter } from "next/navigation"; // Added
+import { toast } from "@/hooks/use-toast"; // Added
 
 export default function Home() {
+  const router = useRouter(); // Added
+  const { data: session, status } = useSession(); // Added
+
+  const handleGeneralRegisterClick = () => {
+    if (status === "loading") return;
+
+    if (!session) {
+      router.push("/auth/login?callbackUrl=/programs");
+    } else {
+      // User is logged in, guide them to the programs page
+      toast({
+        title: "Explore Our Programs",
+        description: "Please browse our programs to register for specific events.",
+      });
+      router.push("/programs");
+    }
+  };
+
   return (
     <div className="flex flex-col w-full">
       <HeroSection />
@@ -58,8 +81,15 @@ export default function Home() {
             Be part of our mission to strengthen national security through education and community engagement.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary">Register for Events</Button>
-            <Button size="lg" variant="outline">Support Our Mission</Button>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={handleGeneralRegisterClick}
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? "Loading..." : "Register for Events"}
+            </Button>
+            <Button size="lg" variant="outline">Support Our Mission</Button> {/* Assuming this button has its own separate functionality */}
           </div>
         </div>
       </section>

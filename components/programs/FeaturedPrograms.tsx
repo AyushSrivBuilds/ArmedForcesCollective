@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Added
+import { useSession } from "next-auth/react"; // Added
+import { toast } from "@/hooks/use-toast"; // Added
 import { Calendar, Users, BookOpen, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,9 +14,26 @@ import { programsData } from "@/lib/data";
 
 const FeaturedPrograms = () => {
   const [audience, setAudience] = useState("all");
+  const router = useRouter(); // Added
+  const { data: session, status } = useSession(); // Added
 
-  const filteredPrograms = audience === "all" 
-    ? programsData.slice(0, 6) 
+  const handleRegisterClick = (programTitle: string, programPath: string) => {
+    if (status === "loading") return; // Do nothing if session is loading
+
+    if (!session) {
+      // Redirect to login, then back to the programs page (or specific program page if available)
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(programPath || '/programs')}`);
+    } else {
+      toast({
+        title: "Registration Successful!",
+        description: `You've been notionally registered for "${programTitle}".`,
+        variant: "default", // Or "success" if you have such a variant
+      });
+    }
+  };
+
+  const filteredPrograms = audience === "all"
+    ? programsData.slice(0, 6)
     : programsData.filter(program => program.audience === audience).slice(0, 6);
 
   const getProgramIcon = (type: string) => {
@@ -82,7 +102,13 @@ const FeaturedPrograms = () => {
                       year: "numeric" 
                     })}
                   </div>
-                  <Button size="sm">Register</Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleRegisterClick(program.title, `/programs/${program.id}`)} // Assuming program.id can form a path
+                    disabled={status === "loading"}
+                  >
+                    Register
+                  </Button>
                 </div>
               </div>
             </div>

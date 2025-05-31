@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation"; // Added useRouter
+import { useSession, signOut } from "next-auth/react"; // Added useSession and signOut
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -21,6 +22,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter(); // Added router instance
+  const { data: session, status } = useSession(); // Get session status
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,7 +56,7 @@ const Navbar = () => {
         <Link href="/" className="flex items-center gap-2">
           <ShieldCheck className="h-6 w-6" />
           <span className="font-bold text-lg hidden sm:inline-block">
-            Armed Forces Education
+            Armed Forces Collective
           </span>
         </Link>
 
@@ -78,9 +81,20 @@ const Navbar = () => {
 
           <div className="ml-4 flex items-center gap-2">
             <ModeToggle />
-            <Button variant="default" size="sm">
-              Sign In
-            </Button>
+            {status === "loading" ? (
+              <Button variant="outline" size="sm" disabled>...</Button>
+            ) : session ? (
+              <>
+                <span className="text-sm hidden sm:inline">Hi, {session.user?.name || session.user?.email?.split('@')[0]}</span>
+                <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button variant="default" size="sm" onClick={() => router.push('/auth/login')}>
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
 
@@ -122,9 +136,20 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="pt-2">
-              <Button className="w-full" size="sm">
-                Sign In
-              </Button>
+              {status === "loading" ? (
+                <Button className="w-full" size="sm" disabled>...</Button>
+              ) : session ? (
+                <>
+                  <p className="px-3 py-2 text-sm text-muted-foreground">Hi, {session.user?.name || session.user?.email?.split('@')[0]}</p>
+                  <Button className="w-full" variant="ghost" size="sm" onClick={() => { signOut({ callbackUrl: '/' }); setIsMobileMenuOpen(false); }}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button className="w-full" size="sm" onClick={() => { router.push('/auth/login'); setIsMobileMenuOpen(false); }}>
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
