@@ -103,7 +103,7 @@ const HeroSection = () => {
               <Button size="lg" className="bg-primary bg-opacity-100 text-white hover:bg-primary/80">
                 Upcoming Events <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/20">
+              <Button size="lg">
                 Learn More
               </Button>
             </div>

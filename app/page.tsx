@@ -89,7 +89,7 @@ export default function Home() {
             >
               {status === "loading" ? "Loading..." : "Register for Events"}
             </Button>
-            <Button size="lg" variant="outline">Support Our Mission</Button> {/* Assuming this button has its own separate functionality */}
+            <Button size="lg" variant="secondary">Support Our Mission</Button> {/* Assuming this button has its own separate functionality */}
           </div>
         </div>
       </section>
